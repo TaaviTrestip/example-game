@@ -9,7 +9,7 @@ ADDBUBBLE = pygame.USEREVENT + 1
 pygame.time.set_timer(ADDBUBBLE, 250)
 
 
-def check_events(game_settings, screen, player, bubbles):
+def check_events(game_settings, screen, player, bubbles, stats, play_button):
     """Check keyboard events"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -34,28 +34,43 @@ def check_events(game_settings, screen, player, bubbles):
                 player.moving_down = False
         elif event.type == ADDBUBBLE:
             create_bubble(game_settings, screen, bubbles)
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            check_play_button(stats, play_button, mouse_x, mouse_y)
+
+def check_play_button(stats, play_button, mouse_x, mouse_y):
+    if play_button.rect.collidepoint(mouse_x, mouse_y):
+        stats.game_active = True
 
 def create_bubble(game_settings, screen, bubbles):
     new_bubble = Bubble(screen, game_settings)
     bubbles.add(new_bubble)
 
 
-def update_bubbles(player, bubbles):
+def update_bubbles(player, bubbles, stats, sb):
     hitted_bubble = pygame.sprite.spritecollideany(player, bubbles)
     if hitted_bubble != None:
+        stats.score += hitted_bubble.bubble_radius
+        sb.prepare_score()
         hitted_bubble.kill()
         
         
-def update_screen(game_settings, screen, player, bubbles, clock):
+def update_screen(game_settings, screen, player, bubbles, clock, stats, play_button, sb):
     """Update image on screen and draw new screen"""
     # Add screen background
     screen.fill(game_settings.bg_color)
     # Add player to screen
     player.blit_me()
     # Add bubbles to screen
-    for bubble in bubbles:
-        bubble.blit_me()
+    if len(bubbles) > 0:
+        for bubble in bubbles:
+            bubble.blit_me()
+    # Show score
+    sb.draw_score()
     # Game fps is 30
     clock.tick(30)
+    # Display play button
+    if not stats.game_active:
+        play_button.draw_button()
     # Display the last screen
     pygame.display.flip()
