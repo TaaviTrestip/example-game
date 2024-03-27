@@ -33,7 +33,7 @@ def check_events(game_settings, screen, player, bubbles, stats, play_button):
             if event.key == pygame.K_DOWN:
                 player.moving_down = False
         elif event.type == ADDBUBBLE:
-            create_bubble(game_settings, screen, bubbles)
+            create_bubble(game_settings, screen, bubbles, stats)
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
             check_play_button(stats, play_button, mouse_x, mouse_y)
@@ -42,8 +42,8 @@ def check_play_button(stats, play_button, mouse_x, mouse_y):
     if play_button.rect.collidepoint(mouse_x, mouse_y):
         stats.game_active = True
 
-def create_bubble(game_settings, screen, bubbles):
-    new_bubble = Bubble(screen, game_settings)
+def create_bubble(game_settings, screen, bubbles, stats):
+    new_bubble = Bubble(screen, game_settings, stats)
     bubbles.add(new_bubble)
 
 
@@ -57,6 +57,12 @@ def update_bubbles(player, bubbles, stats, sb, game_settings):
             stats.level += 1
             sb.prepare_level()
             stats.bonus += 1
+            if stats.level < 8:
+                stats.min_speed += 1
+                stats.max_speed += 1
+            elif stats.level >= 8:
+                stats.min_speed += 2
+                stats.max_speed += 2
         hitted_bubble.kill()
         
         
