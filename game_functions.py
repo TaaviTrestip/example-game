@@ -13,7 +13,7 @@ def check_events(game_settings, screen, player, bubbles, stats, play_button):
     """Check keyboard events"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            sys.exit()
+            save_score_and_quit(stats)
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RIGHT:
                 player.moving_right = True
@@ -52,6 +52,9 @@ def update_bubbles(player, bubbles, stats, sb, game_settings):
     if hitted_bubble != None:
         stats.score += hitted_bubble.bubble_radius
         sb.prepare_score()
+        if stats.score > stats.highscore:
+            stats.highscore = stats.score
+            sb.prepare_highscore()
         # Increase level
         if (int(stats.score / game_settings.bonus_score)) > stats.bonus:
             stats.level += 1
@@ -85,3 +88,9 @@ def update_screen(game_settings, screen, player, bubbles, clock, stats, play_but
         play_button.draw_button()
     # Display the last screen
     pygame.display.flip()
+
+
+def save_score_and_quit(stats):
+    stats.highscore_update(stats.score)
+    sys.exit()
+    

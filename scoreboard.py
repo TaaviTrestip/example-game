@@ -15,6 +15,8 @@ class Scoreboard():
         self.prepare_score()
         # Prepare graphical level
         self.prepare_level()
+        # Prepare graphical highscore
+        self.prepare_highscore()
         
         
     def prepare_score(self):
@@ -25,7 +27,7 @@ class Scoreboard():
         self.score_image_rect.right = self.screen_rect.right - 20
         self.score_image_rect.top = 20
         
-    
+        
     def prepare_level(self):
         """Convert level to graphics component"""
         level_str = str(self.stats.level)
@@ -34,8 +36,18 @@ class Scoreboard():
         self.level_rect = self.level_image.get_rect()
         self.level_rect.right = self.score_image_rect.right
         self.level_rect.top = self.score_image_rect.bottom + 10
+       
+       
+    def prepare_highscore(self):
+        """Convert highscore to graphical component"""
+        highscore_str = str(self.stats.highscore)
+        self.highscore_image = self.font.render(highscore_str, True, self.text_color, self.game_settings.bg_color)
+        self.highscore_image_rect = self.highscore_image.get_rect()
+        self.highscore_image_rect.right = self.screen_rect.right - 400
+        self.highscore_image_rect.top = 20
         
         
     def draw_score(self):
         self.screen.blit(self.score_image, self.score_image_rect)
         self.screen.blit(self.level_image, self.level_rect)
+        self.screen.blit(self.highscore_image, self.highscore_image_rect)
